@@ -12,28 +12,28 @@ export class UploadService {
 
   constructor(private http: HttpClient) { }
 
-  uploadVideo(videoUrl: string) {
+  uploadVideo(videoData: FormData) {
     /** 
     return this.http.post<any>(upload_video_url, videoUrl)
       .pipe(
         catchError(this.handleError)
       );*/
-        axios({
-          method: 'POST',
-          url: upload_video_url,
-          data: videoUrl,
-          headers: {
-            'Content-Type': 'multipart/form-data;charset=UTF-8'
-          }
-        }).then(res => {
-          console.log(res);
-          if (res.data.success) {
-            alert('Upload file success');
-          }
-          else {
-            alert('Upload file fail!');
-          }
-        });
+    axios({
+      method: 'POST',
+      url: upload_video_url,
+      data: videoData,
+      headers: {
+        'Content-Type': 'multipart/form-data;charset=UTF-8'
+      }
+    }).then(res => {
+      console.log(res);
+      if (res.data.success) {
+        alert('Upload file success');
+      }
+      else {
+        alert('Upload file fail!');
+      }
+    });
 
   }
 
