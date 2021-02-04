@@ -1,5 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { UploadService } from 'src/app/upload.service';
 
 @Component({
     selector: 'video-question',
@@ -13,9 +14,9 @@ export class VideoQuestionComponent implements OnInit {
     private recordedVideo: ElementRef;
   
     private recordingTimeMS = 5000; // 5s recording time
-    private videoUrl;
+    private videoUrl: string;
   
-    constructor(private sanitizer: DomSanitizer) { }
+    constructor(private sanitizer: DomSanitizer, private uploadService: UploadService) { }
   
     ngOnInit() {
       this.recordingTimeMS = 5000;
@@ -70,7 +71,7 @@ export class VideoQuestionComponent implements OnInit {
           this.recordedVideo.nativeElement.src = url;
   
           console.log(url);
-          this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url) as string;
   
           console.log("Successfully recorded " + recordedBlob.size + " bytes of " +
             recordedBlob.type + " media.");
@@ -82,6 +83,15 @@ export class VideoQuestionComponent implements OnInit {
     stopButtonEvent() {
       const video = this.faceRecVideo.nativeElement;
       // stop the recording
-      video.srcObject.getTracks().forEach(track => track.stop());
+      if (video.srcObject != null) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+      }
+
+    }
+
+    // upload to server test
+    uploadVideo() {
+      console.log(this.uploadService.uploadVideo(this.videoUrl));
+        this.uploadService.uploadVideo("testurl123456");
     }
 }
