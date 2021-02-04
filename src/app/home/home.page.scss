@@ -1,7 +1,13 @@
-#container {
-  text-align: center;
+.page-container {
+  max-width: 1200px;
+  min-width: 500px;
+  height: 100%;
+  margin: 0 auto;
+  background-color: #ffffe6;
 }
 
-.preview {
-  background-color: gray;
+.nav-button-container {
+  width: 60%;
+  min-width: 300px;
+  margin: 5px auto;
 }

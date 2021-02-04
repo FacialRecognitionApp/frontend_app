@@ -7,21 +7,15 @@
 </ion-header>
 
 <ion-content [scrollY]='true'>
-  <div id="container">
-    <div>
-      <ion-button (click)="startButtonEvent()">
-        Start
-      </ion-button>
-      <h2>Preview</h2>
-      <video class='preview' #faceRecVideo width="260" height="200" autoplay muted></video>
-    </div>
-
-    <div>
-      <ion-button (click)="stopButtonEvent()">
-        Stop
-      </ion-button>
-      <h2>Recording</h2>
-      <video id="recording" width="260" height="200" controls></video>
-    </div>
+  <div class="page-container">
+    <question-render [question]="questionToRender"></question-render>
   </div>
+
 </ion-content>
+
+<ion-footer>
+  <div class="nav-button-container">
+    <ion-button [disabled]="true" style="float: left;">Back</ion-button>
+    <ion-button [disabled]="true" style="float: right;">Next</ion-button>
+  </div>
+</ion-footer>
