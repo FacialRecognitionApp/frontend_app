@@ -1,0 +1,19 @@
+<div style="margin-top: 30px;">
+    <ion-item>
+        <ion-text style="margin: 0 auto; font-size: 30px;">{{question.description}}</ion-text>
+    </ion-item>
+
+    <div id="container">
+        <ion-button style="margin-top: 20px;" id="startBtn" (click)="startButtonEvent()">
+            Start
+        </ion-button>
+        <div>
+            <h2 id="preview"></h2>
+            <video class='preview' #faceRecVideo width="350" height="350" autoplay></video>
+
+        </div>
+
+        <ion-button (click)="uploadVideo()">Test to Upload</ion-button>
+    </div>
+
+</div>

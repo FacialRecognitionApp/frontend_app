@@ -5,8 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
-import { VideoQuestionComponent } from '../components/survey-question-components/video-question/video-question.component';
-import { QuestionRenderComponent } from '../components/question-render-component/question-render/question-render.component';
+import { VideoQuestionComponent } from '../components/video-question-component/video-question.component';
+import { IntroductionComponent } from '../components/introduction-component/introduction.component';
+import { UserAgreementComponent } from '../components/user-agreement-component/user-agreement.component';
 
 
 @NgModule({
@@ -16,6 +17,6 @@ import { QuestionRenderComponent } from '../components/question-render-component
     IonicModule,
     HomePageRoutingModule
   ],
-  declarations: [HomePage, VideoQuestionComponent, QuestionRenderComponent]
+  declarations: [HomePage, VideoQuestionComponent, IntroductionComponent, UserAgreementComponent]
 })
 export class HomePageModule {}

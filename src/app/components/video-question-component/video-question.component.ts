@@ -1,5 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IonButton } from '@ionic/angular';
+import { Question } from 'src/app/home/home.page';
 import { UploadService } from 'src/app/upload.service';
 
 @Component({
@@ -8,18 +10,18 @@ import { UploadService } from 'src/app/upload.service';
   styleUrls: ['./video-question.component.scss'],
 })
 export class VideoQuestionComponent implements OnInit {
+  @Input() question: Question;
+
   @ViewChild('faceRecVideo')
   private faceRecVideo: ElementRef;
-  @ViewChild('recordedVideo')
-  private recordedVideo: ElementRef;
 
-  private recordingTimeMS = 5000; // 5s recording time
+  private recordingTimeMS = 1000; // 1s recording time
   private videoData: FormData;
 
   constructor(private sanitizer: DomSanitizer, private uploadService: UploadService) { }
 
   ngOnInit() {
-    this.recordingTimeMS = 5000;
+    console.log(1);
   }
 
   wait(delayInMS) {
@@ -50,7 +52,10 @@ export class VideoQuestionComponent implements OnInit {
   }
 
   startButtonEvent() {
-    const video: HTMLVideoElement = this.faceRecVideo.nativeElement;
+    const video = this.faceRecVideo.nativeElement;
+    document.getElementById('startBtn').setAttribute('disabled', 'true');
+    document.getElementById('preview').innerHTML = '';
+    video.controls = false;
 
     navigator.mediaDevices.getUserMedia({
       video: true,
@@ -68,30 +73,30 @@ export class VideoQuestionComponent implements OnInit {
       .then(recordedChunks => {
         let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
         const url = window.URL.createObjectURL(recordedBlob); // blob url to retrieve video
-        this.recordedVideo.nativeElement.src = url;
-
-        console.log("Successfully recorded " + recordedBlob.size + " bytes of " +
-          recordedBlob.type + " media.");
-
         const file = new File([recordedBlob], 'video.webm');
         this.videoData = new FormData();
         this.videoData.append('file', file);
+        console.log(this.videoData);
 
-        this.stopButtonEvent();
+        // stop the recording
+        if (video.srcObject != null) {
+          video.srcObject = null;
+        }
+        video.src = url;
+        video.controls = true;
+        document.getElementById('preview').innerHTML = 'Preview';
+        document.getElementById('startBtn').setAttribute('disabled', 'false');
+        document.getElementById('startBtn').innerHTML = 'Restart';
+
+        this.question.answerData = this.videoData;
       });
   }
 
-  stopButtonEvent() {
-    const video = this.faceRecVideo.nativeElement;
-    // stop the recording
-    if (video.srcObject != null) {
-      video.srcObject.getTracks().forEach(track => track.stop());
-    }
 
-  }
 
   // upload to server test
   uploadVideo() {
+    console.log(this.videoData);
     this.uploadService.uploadVideo(this.videoData);
   }
 }

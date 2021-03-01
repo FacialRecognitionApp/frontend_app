@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { IonButton } from '@ionic/angular';
 
 export interface Question {
   description: string;
   type: string;
-  answer: string;
+  answerData: FormData;
 }
 
 @Component({
@@ -11,26 +12,64 @@ export interface Question {
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, AfterViewInit {
+  @ViewChild('backBtn') backBtn: IonButton;
+  @ViewChild('nextBtn') nextBtn: IonButton;
+  public currentPageIndex = 2; // test purpose
+  public totalPageCount;
   public surveyQuestions: Array<Question> = [
     {
       description: 'Test Q',
       type: 'video',
-      answer: ''
+      answerData: null
     },
     {
-      description: 'Test Q',
-      type: 'multi-choice',
-      answer: ''
+      description: 'Test Another Question',
+      type: 'video',
+      answerData: null
+    },
+    {
+      description: 'Test Another Question 3',
+      type: 'video',
+      answerData: null
     }
   ];
-
-  public questionToRender;
   
-  constructor() { }
+  constructor() {
+    this.totalPageCount = this.surveyQuestions.length + 2;
+   }
 
   ngOnInit() {
-    this.questionToRender = this.surveyQuestions[0]; // start from first question
   }
 
+  ngAfterViewInit() {
+    if (this.currentPageIndex == 0)
+      this.backBtn.disabled = true;
+  }
+
+  public next(): void {
+    if (this.backBtn.disabled) 
+      this.backBtn.disabled = false;
+
+    this.currentPageIndex += 1;
+    if (this.currentPageIndex == this.totalPageCount -1) 
+      this.nextBtn.disabled = true;
+    
+
+    console.log(this.surveyQuestions);
+  }
+
+  public back(): void {
+    if (this.nextBtn.disabled)
+      this.nextBtn.disabled = false;
+    
+    this.currentPageIndex -= 1;
+    if (this.currentPageIndex == 0)
+      this.backBtn.disabled = true;
+    
+  }
+
+  public toggleNextBtn(e): void {
+    this.nextBtn.disabled = !e;
+  }
 }

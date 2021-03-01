@@ -8,14 +8,16 @@
 
 <ion-content [scrollY]='true'>
   <div class="page-container">
-    <question-render [question]="questionToRender"></question-render>
+    <!-- Part A Survey -->
+    <introduction *ngIf="currentPageIndex == 0"></introduction>
+    <user-agreement *ngIf="currentPageIndex == 1" (canNextEmitter)="toggleNextBtn($event)"></user-agreement>
+    <video-question *ngIf="currentPageIndex > 1" [question]="this.surveyQuestions[this.currentPageIndex - 2]"></video-question>
   </div>
-
 </ion-content>
 
 <ion-footer>
   <div class="nav-button-container">
-    <ion-button [disabled]="true" style="float: left;">Back</ion-button>
-    <ion-button [disabled]="true" style="float: right;">Next</ion-button>
+    <ion-button #backBtn style="float: left;" (click)="back()">Back</ion-button>
+    <ion-button #nextBtn style="float: right;" (click)="next()">Next</ion-button>
   </div>
 </ion-footer>
