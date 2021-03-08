@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { IonInput } from '@ionic/angular';
 
 @Component({
   selector: 'user-agreement',
@@ -6,13 +7,19 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./user-agreement.component.scss'],
 })
 export class UserAgreementComponent implements OnInit {
-  @Output() canNextEmitter: EventEmitter<boolean> = new EventEmitter();
+  @Output() userAgreementEmitter: EventEmitter<any> = new EventEmitter();
+
+  @ViewChild('emailInput')
+  emailInput: IonInput;
 
   private canNextBtn = false;
   constructor() { }
 
   ngOnInit() {
-    this.canNextEmitter.emit(this.canNextBtn);
+    this.userAgreementEmitter.emit({
+      canNext: this.canNextBtn,
+      email: null
+    });
   }
 
   changeAgreement(e) {
@@ -21,6 +28,16 @@ export class UserAgreementComponent implements OnInit {
     } else {
       this.canNextBtn = false;
     }
-    this.canNextEmitter.emit(this.canNextBtn);
+    this.userAgreementEmitter.emit({
+      canNext: this.canNextBtn,
+      email: this.emailInput.value
+    });
+  }
+
+  changeEmail(e) {
+    this.userAgreementEmitter.emit({
+      canNext: this.canNextBtn,
+      email: e.target.value
+    });
   }
 }

@@ -1,7 +1,7 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IonButton } from '@ionic/angular';
-import { Question } from 'src/app/home/home.page';
+import { VideoQuestion } from 'src/app/constants';
 import { UploadService } from 'src/app/upload.service';
 
 @Component({
@@ -9,9 +9,9 @@ import { UploadService } from 'src/app/upload.service';
   templateUrl: './video-question.component.html',
   styleUrls: ['./video-question.component.scss'],
 })
-export class VideoQuestionComponent implements OnInit {
-  @Input() question: Question;
-
+export class VideoQuestionComponent implements AfterViewInit {
+  @Input() question: VideoQuestion;
+  @Input() userId: number;
   @ViewChild('faceRecVideo')
   private faceRecVideo: ElementRef;
 
@@ -20,8 +20,10 @@ export class VideoQuestionComponent implements OnInit {
 
   constructor(private sanitizer: DomSanitizer, private uploadService: UploadService) { }
 
-  ngOnInit() {
-    console.log(1);
+  ngAfterViewInit() {
+    if (this.question.videoUrl) {
+      this.transferToPreview(this.question.videoUrl);
+    }
   }
 
   wait(delayInMS) {
@@ -76,27 +78,32 @@ export class VideoQuestionComponent implements OnInit {
         const file = new File([recordedBlob], 'video.webm');
         this.videoData = new FormData();
         this.videoData.append('file', file);
-        console.log(this.videoData);
+
+        console.log(this.videoData.get('file'));
 
         // stop the recording
         if (video.srcObject != null) {
           video.srcObject = null;
         }
-        video.src = url;
-        video.controls = true;
-        document.getElementById('preview').innerHTML = 'Preview';
-        document.getElementById('startBtn').setAttribute('disabled', 'false');
-        document.getElementById('startBtn').innerHTML = 'Restart';
 
-        this.question.answerData = this.videoData;
+        this.transferToPreview(url);
+
+        this.question.videoUrl = url;
       });
   }
 
-
+  transferToPreview(url: string) {
+    const video = this.faceRecVideo.nativeElement;
+    video.src = url;
+    video.controls = true;
+    document.getElementById('preview').innerHTML = 'Preview';
+    document.getElementById('startBtn').setAttribute('disabled', 'false');
+    document.getElementById('startBtn').innerHTML = 'Restart';
+  }
 
   // upload to server test
-  uploadVideo() {
+  async uploadVideo(): Promise<void> {
     console.log(this.videoData);
-    this.uploadService.uploadVideo(this.videoData);
+    await this.uploadService.uploadVideo(this.videoData, this.userId);
   }
 }

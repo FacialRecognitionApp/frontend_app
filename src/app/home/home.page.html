@@ -8,16 +8,25 @@
 
 <ion-content [scrollY]='true'>
   <div class="page-container">
-    <!-- Part A Survey -->
-    <introduction *ngIf="currentPageIndex == 0"></introduction>
-    <user-agreement *ngIf="currentPageIndex == 1" (canNextEmitter)="toggleNextBtn($event)"></user-agreement>
-    <video-question *ngIf="currentPageIndex > 1" [question]="this.surveyQuestions[this.currentPageIndex - 2]"></video-question>
+    <div *ngFor="let i of pageArray">
+      <!-- Part A Survey -->
+      <div *ngIf="i == 0">
+        <introduction *ngIf="currentPageIndex == i"></introduction>
+      </div>
+      <div *ngIf="i == 1">
+        <user-agreement *ngIf="currentPageIndex == i" (userAgreementEmitter)="getUserAgreementVals($event)"></user-agreement>
+      </div>
+      <div *ngIf="i > 1">
+        <video-question *ngIf="currentPageIndex == i" [question]="videoQuestions[currentPageIndex - 2]" [userId]="userId"></video-question>
+      </div>
+    </div>
+
   </div>
 </ion-content>
 
 <ion-footer>
   <div class="nav-button-container">
     <ion-button #backBtn style="float: left;" (click)="back()">Back</ion-button>
-    <ion-button #nextBtn style="float: right;" (click)="next()">Next</ion-button>
+    <ion-button id="nextBtn" #nextBtn style="float: right;" (click)="next()">Next</ion-button>
   </div>
 </ion-footer>

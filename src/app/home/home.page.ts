@@ -1,11 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IonButton } from '@ionic/angular';
-
-export interface Question {
-  description: string;
-  type: string;
-  answerData: FormData;
-}
+import { VideoQuestion } from '../constants';
+import { UploadService } from '../upload.service';
 
 @Component({
   selector: 'app-home',
@@ -15,31 +11,39 @@ export interface Question {
 export class HomePage implements OnInit, AfterViewInit {
   @ViewChild('backBtn') backBtn: IonButton;
   @ViewChild('nextBtn') nextBtn: IonButton;
-  public currentPageIndex = 2; // test purpose
+  public currentPageIndex = 0;
   public totalPageCount;
-  public surveyQuestions: Array<Question> = [
+  public pageArray;
+  private userEmailAddress;
+  public userId = -1;
+
+  public videoQuestions: Array<VideoQuestion> = [
     {
       description: 'Test Q',
       type: 'video',
-      answerData: null
+      videoUrl: null
     },
     {
       description: 'Test Another Question',
       type: 'video',
-      answerData: null
+      videoUrl: null
     },
     {
       description: 'Test Another Question 3',
       type: 'video',
-      answerData: null
+      videoUrl: null
     }
   ];
   
-  constructor() {
-    this.totalPageCount = this.surveyQuestions.length + 2;
+  constructor(private uploadService: UploadService) {
+    this.totalPageCount = this.videoQuestions.length + 2;
+    this.pageArray = [];
+    for (let i = 0; i < this.totalPageCount; i++) {
+      this.pageArray.push(i);
+    }
    }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
   }
 
   ngAfterViewInit() {
@@ -47,29 +51,55 @@ export class HomePage implements OnInit, AfterViewInit {
       this.backBtn.disabled = true;
   }
 
-  public next(): void {
-    if (this.backBtn.disabled) 
-      this.backBtn.disabled = false;
+  public async next(): Promise<void> {
+    let canNext = true;
+    // retrieve potential email in user agreement page and disable back button
+    if (this.currentPageIndex == 1) {
+      this.backBtn.disabled = true;
+      // add user id
+      this.userId = await this.uploadService.addUserRecord(this.userEmailAddress);
+      if (this.userId == -1) {
+        // bad response
+        canNext = false;
+      }
+      console.log(this.userId);
+    }
+    else {
+      if (this.backBtn.disabled) 
+        this.backBtn.disabled = false;
+    }
 
-    this.currentPageIndex += 1;
-    if (this.currentPageIndex == this.totalPageCount -1) 
-      this.nextBtn.disabled = true;
-    
+    if (canNext)
+      this.currentPageIndex += 1;
 
-    console.log(this.surveyQuestions);
+    // reach the end
+    if (this.currentPageIndex == this.totalPageCount - 1) {
+      // this.nextBtn.disabled = true;
+      document.getElementById('nextBtn').innerHTML = "Submit";
+      this.submit();
+    }
   }
 
   public back(): void {
+    if (document.getElementById('nextBtn').innerHTML == "Submit") {
+      document.getElementById('nextBtn').innerHTML = "Next";
+    }
+
     if (this.nextBtn.disabled)
       this.nextBtn.disabled = false;
     
     this.currentPageIndex -= 1;
-    if (this.currentPageIndex == 0)
+    if (this.currentPageIndex == 0 || this.currentPageIndex == 2)
       this.backBtn.disabled = true;
     
   }
 
-  public toggleNextBtn(e): void {
-    this.nextBtn.disabled = !e;
+  public getUserAgreementVals(e: any): void {
+    this.nextBtn.disabled = !e.canNext;
+    this.userEmailAddress = e.email;
+  }
+
+  public submit(): void {
+    console.log(this.videoQuestions);
   }
 }

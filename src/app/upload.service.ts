@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import axios from 'axios';
+import { upload_video_url, add_user_url } from './constants';
 
-const upload_video_url = "http://localhost:7000/video/upload_file";
 @Injectable({
   providedIn: 'root'
 })
@@ -12,31 +12,48 @@ export class UploadService {
 
   constructor(private http: HttpClient) { }
 
-  uploadVideo(videoData: FormData) {
-    /** 
-    return this.http.post<any>(upload_video_url, videoUrl)
-      .pipe(
-        catchError(this.handleError)
-      );*/
-    axios({
+  async uploadVideo(videoData: FormData, userId: number): Promise<void> {
+    const res = await axios({
       method: 'POST',
       url: upload_video_url,
       data: videoData,
+      params: {
+        user_id: userId
+      },
       headers: {
         'Content-Type': 'multipart/form-data;charset=UTF-8'
       }
-    }).then(res => {
-      console.log(res);
-      if (res.data.success) {
-        alert('Upload file success');
-      }
-      else {
-        alert('Upload file fail!');
-      }
     });
 
+    console.log(res.data);
+
+    if (res.data.success) {
+      alert('Upload file success');
+    }
+    else {
+      alert('Upload file fail!');
+    }
   }
 
+  async addUserRecord(email?: string): Promise<number> {
+    const res = await axios({
+      method: 'POST',
+      url: add_user_url,
+      data: { email: email },
+    });
+    console.log(res.data);
+
+    if (res.data.success) {
+      return res.data.user_id;
+    }
+    else {
+      alert(res.data.message);
+      return -1;
+    }
+  }
+
+
+  /** 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred
@@ -50,5 +67,5 @@ export class UploadService {
     // Return a user-facing error message
     return throwError(
       'Something bad happened; please try again later.');
-  }
+  }*/
 }

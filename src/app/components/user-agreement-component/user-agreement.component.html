@@ -1,25 +1,28 @@
 <div style="margin-top: 30px;">
-    <ion-item>
-        <ion-text style="margin: 0 auto; font-size: 30px;">User Agreement</ion-text>
+  <ion-item>
+    <ion-text style="margin: 0 auto; font-size: 30px;">User Agreement</ion-text>
+  </ion-item>
+
+  <div style="margin: 50px 20px 0 20px;">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Confidential</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        placeholder... Stored video will be only used by Axcessiom for _____ purpose...
+      </ion-card-content>
+    </ion-card>
+
+    <ion-item lines="none" mode="ios">
+      <ion-checkbox slot="start" (ionChange)="changeAgreement($event)"></ion-checkbox>
+      <ion-label style="font-weight: bold;">I agree</ion-label>
     </ion-item>
 
-    <div style="margin: 50px 20px 0 20px;">
-        <ion-card>
-            <ion-card-header>
-              <ion-card-title>Confidential</ion-card-title>
-            </ion-card-header>
-          
-            <ion-card-content>
-                placeholder... Stored video will be only used by Axcessiom for _____ purpose...
-            </ion-card-content>
-          </ion-card>
-          
+    <ion-item>
+      <ion-label>Your email address:</ion-label>
+      <ion-input #emailInput (ionChange)="changeEmail($event)"></ion-input>
+    </ion-item>
 
-
-          <ion-item lines="none" mode="ios">
-            <ion-checkbox slot="start" (ionChange)="changeAgreement($event)"></ion-checkbox>
-            <ion-label style="font-weight: bold;">I agree</ion-label>
-          </ion-item>
-        
-    </div>
+  </div>
 </div>
