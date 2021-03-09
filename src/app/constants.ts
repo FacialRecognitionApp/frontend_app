@@ -2,6 +2,7 @@ export interface VideoQuestion {
   description: string;
   type: string;
   videoUrl: string;
+  durationMS: number;
 }
 
 // backend Calls

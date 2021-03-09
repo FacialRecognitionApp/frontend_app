@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IonButton } from '@ionic/angular';
+import { CircleProgressComponent } from 'ng-circle-progress';
 import { VideoQuestion } from 'src/app/constants';
 import { UploadService } from 'src/app/upload.service';
 
@@ -14,8 +15,8 @@ export class VideoQuestionComponent implements AfterViewInit {
   @Input() userId: number;
   @ViewChild('faceRecVideo')
   private faceRecVideo: ElementRef;
-
-  private recordingTimeMS = 1000; // 1s recording time
+  @ViewChild('countdown')
+  private countdown: CircleProgressComponent;
   private videoData: FormData;
 
   constructor(private sanitizer: DomSanitizer, private uploadService: UploadService) { }
@@ -66,10 +67,12 @@ export class VideoQuestionComponent implements AfterViewInit {
       .then(stream => {
         console.log(stream);
         video.srcObject = stream;
+
+        this.startCountdown();
         return new Promise(resolve => video.onplaying = resolve);
       })
       .then(() =>
-        this.startRecording(video.srcObject as MediaStream, this.recordingTimeMS)
+        this.startRecording(video.srcObject as MediaStream, this.question.durationMS)
       )
       // stop recording
       .then(recordedChunks => {
@@ -105,5 +108,11 @@ export class VideoQuestionComponent implements AfterViewInit {
   async uploadVideo(): Promise<void> {
     console.log(this.videoData);
     await this.uploadService.uploadVideo(this.videoData, this.userId);
+  }
+
+  startCountdown() {
+    this.countdown.percent = 100;
+    this.countdown.animationDuration = this.question.durationMS;
+    this.countdown.render();
   }
 }

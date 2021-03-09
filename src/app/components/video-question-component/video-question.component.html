@@ -11,9 +11,15 @@
             <h2 id="preview"></h2>
             <video class='video' #faceRecVideo width="350" height="350" autoplay></video>
 
+            <div style="position: relative; margin-top: -360px; margin-left: 500px;">
+                <circle-progress #countdown [animation]="true" [backgroundPadding]="7" [radius]="60" [space]="-2"
+                    [outerStrokeWidth]="2" [outerStrokeColor]="'#808080'" [innerStrokeColor]="'#e7e8ea'"
+                    [innerStrokeWidth]="2" [animateTitle]="true" [showSubtitle]="false"
+                    [clockwise]="false">
+                </circle-progress>
+            </div>
         </div>
 
-        <ion-button (click)="uploadVideo()">Test to Upload</ion-button>
-    </div>
+        <ion-button style="margin-top: 350px" (click)="uploadVideo()">Test to Upload</ion-button>
 
-</div>
+    </div>

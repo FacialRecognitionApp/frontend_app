@@ -19,19 +19,40 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public videoQuestions: Array<VideoQuestion> = [
     {
-      description: 'Test Q',
+      description: 'Closed-mouth smile',
       type: 'video',
-      videoUrl: null
+      videoUrl: null,
+      durationMS: 1000
     },
     {
-      description: 'Test Another Question',
+      description: 'Open-mouth smile',
       type: 'video',
-      videoUrl: null
+      videoUrl: null,
+      durationMS: 1000
     },
     {
-      description: 'Test Another Question 3',
+      description: 'Frown',
       type: 'video',
-      videoUrl: null
+      videoUrl: null,
+      durationMS: 1000
+    },
+    {
+      description: 'Brow furrow',
+      type: 'video',
+      videoUrl: null,
+      durationMS: 1000
+    },
+    {
+      description: 'Wink with left eye',
+      type: 'video',
+      videoUrl: null,
+      durationMS: 1000
+    },
+    {
+      description: 'Wink with right eye',
+      type: 'video',
+      videoUrl: null,
+      durationMS: 1000
     }
   ];
   

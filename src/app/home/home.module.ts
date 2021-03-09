@@ -8,14 +8,15 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { VideoQuestionComponent } from '../components/video-question-component/video-question.component';
 import { IntroductionComponent } from '../components/introduction-component/introduction.component';
 import { UserAgreementComponent } from '../components/user-agreement-component/user-agreement.component';
-
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    NgCircleProgressModule.forRoot({})
   ],
   declarations: [HomePage, VideoQuestionComponent, IntroductionComponent, UserAgreementComponent]
 })
