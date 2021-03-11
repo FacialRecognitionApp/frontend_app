@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { IonButton } from '@ionic/angular';
 import { CircleProgressComponent } from 'ng-circle-progress';
 import { VideoQuestion } from 'src/app/constants';
-import { UploadService } from 'src/app/upload.service';
+import { SurveyService } from 'src/app/survey.service';
 
 @Component({
   selector: 'video-question',
@@ -19,11 +19,11 @@ export class VideoQuestionComponent implements AfterViewInit {
   private countdown: CircleProgressComponent;
   private videoData: FormData;
 
-  constructor(private sanitizer: DomSanitizer, private uploadService: UploadService) { }
+  constructor(private sanitizer: DomSanitizer, private surveyService: SurveyService) { }
 
   ngAfterViewInit() {
-    if (this.question.videoUrl) {
-      this.transferToPreview(this.question.videoUrl);
+    if (this.question.video_url) {
+      this.transferToPreview(this.question.video_url);
     }
   }
 
@@ -72,7 +72,7 @@ export class VideoQuestionComponent implements AfterViewInit {
         return new Promise(resolve => video.onplaying = resolve);
       })
       .then(() =>
-        this.startRecording(video.srcObject as MediaStream, this.question.durationMS)
+        this.startRecording(video.srcObject as MediaStream, this.question.duration_ms)
       )
       // stop recording
       .then(recordedChunks => {
@@ -91,7 +91,7 @@ export class VideoQuestionComponent implements AfterViewInit {
 
         this.transferToPreview(url);
 
-        this.question.videoUrl = url;
+        this.question.video_url = url;
       });
   }
 
@@ -107,12 +107,12 @@ export class VideoQuestionComponent implements AfterViewInit {
   // upload to server test
   async uploadVideo(): Promise<void> {
     console.log(this.videoData);
-    await this.uploadService.uploadVideo(this.videoData, this.userId, this.question.videoTypeId);
+    await this.surveyService.uploadVideo(this.videoData, this.userId, this.question.video_type_id);
   }
 
   startCountdown() {
     this.countdown.percent = 100;
-    this.countdown.animationDuration = this.question.durationMS;
+    this.countdown.animationDuration = this.question.duration_ms;
     this.countdown.render();
   }
 }

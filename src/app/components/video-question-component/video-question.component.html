@@ -1,6 +1,6 @@
 <div style="margin-top: 30px;">
     <ion-item>
-        <ion-text style="margin: 0 auto; font-size: 30px;">{{question.description}}</ion-text>
+        <ion-text style="margin: 0 auto; font-size: 30px;">{{question.video_type_content}}</ion-text>
     </ion-item>
 
     <div id="container">
@@ -14,8 +14,7 @@
             <div style="position: relative; margin-top: -360px; margin-left: 500px;">
                 <circle-progress #countdown [animation]="true" [backgroundPadding]="7" [radius]="60" [space]="-2"
                     [outerStrokeWidth]="2" [outerStrokeColor]="'#808080'" [innerStrokeColor]="'#e7e8ea'"
-                    [innerStrokeWidth]="2" [animateTitle]="true" [showSubtitle]="false"
-                    [clockwise]="false">
+                    [innerStrokeWidth]="2" [animateTitle]="true" [showSubtitle]="false" [clockwise]="false">
                 </circle-progress>
             </div>
         </div>
@@ -23,3 +22,4 @@
         <ion-button style="margin-top: 350px" (click)="uploadVideo()">Test to Upload</ion-button>
 
     </div>
+</div>

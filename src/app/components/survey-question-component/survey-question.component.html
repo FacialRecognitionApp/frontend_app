@@ -1,0 +1,33 @@
+<div style="margin-top: 30px;">
+    <ion-item>
+        <ion-text style="margin: 0 auto; font-size: 30px;">{{question.question_content}}</ion-text>
+    </ion-item>
+
+    <div id="container">
+        <div *ngIf="question.type_name == 'Rating'">
+            <div *ngFor="let ratingQ of question.rating_questions">
+                <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
+                <ion-item>
+                    <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating">
+                        <ion-label slot="start">Easiest</ion-label>
+                        <ion-label slot="end">Hardest</ion-label>
+                    </ion-range>
+                </ion-item>
+            </div>
+        </div>
+
+        <div *ngIf="question.type_name == 'Short Answer'" style="margin-top: 120px;">
+            <ion-item>
+                <ion-label position="floating">Your answer here</ion-label>
+                <ion-input [(ngModel)]="question.answer_content"></ion-input>
+            </ion-item>
+        </div>
+
+        <div *ngIf="question.type_name == 'Long answer'" style="margin-top: 120px;">
+            <ion-item>
+                <ion-label position="stacked">Your answer here</ion-label>
+                <ion-textarea [(ngModel)]="question.answer_content"></ion-textarea>
+            </ion-item>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { IonButton } from '@ionic/angular';
-import { VideoQuestionComponent } from '../components/video-question-component/video-question.component';
-import { VideoQuestion } from '../constants';
-import { UploadService } from '../upload.service';
+import { IonButton, LoadingController } from '@ionic/angular';
+import { SurveyQuestionComponent } from '../components/survey-question-component/survey-question.component';
+import { RatingSurveyQuestion, SurveyAnswer, SurveyQuestion, SurveyRatingAnswer, VideoQuestion } from '../constants';
+import { SurveyService } from '../survey.service';
 
 @Component({
   selector: 'app-home',
@@ -18,15 +18,24 @@ export class HomePage implements OnInit, AfterViewInit {
   private userEmailAddress;
   public userId = -1;
   public videoQuestions: Array<VideoQuestion> = [];
+  public surveyQuestions: Array<SurveyQuestion> = [];
 
-  constructor(private uploadService: UploadService) {
+  constructor(private surveyService: SurveyService, private loadingController: LoadingController) {
   }
 
   async ngOnInit(): Promise<void> {
+    const loading = await this.loadingController.create({
+      mode: 'ios',
+      message: 'Please wait...',
+    });
+    await loading.present();
 
     await this.loadVideoQuestions();
+    await this.loadSurveyQuestions();
 
-    this.totalPageCount = this.videoQuestions.length + 2;
+    await loading.dismiss();
+
+    this.totalPageCount = 2 + this.videoQuestions.length + this.surveyQuestions.length; // 2 => intro + user agreement page
     this.pageArray = [];
     for (let i = 0; i < this.totalPageCount; i++) {
       this.pageArray.push(i);
@@ -40,46 +49,85 @@ export class HomePage implements OnInit, AfterViewInit {
 
   private async loadVideoQuestions(): Promise<void> {
     this.videoQuestions = [];
-    const res = await this.uploadService.getAllVideoQuestions();
-    res.forEach(data => {
-      const questionToPush: VideoQuestion =
-      {
-        videoTypeId: data.video_type_id, // from backend
-        description: data.video_type_content, // from backend
-        videoUrl: null,
-        durationMS: 1000
-      };
+    const res = await this.surveyService.getAllVideoQuestions();
+    if (res) {
+      // push to local defined type object
+      res.forEach(data => {
+        const questionToPush: VideoQuestion =
+        {
+          video_type_id: data.video_type_id, // from backend
+          video_type_content: data.video_type_content, // from backend
+          duration_ms: 1000
+        };
 
-      this.videoQuestions.push(questionToPush);
-    });
+        this.videoQuestions.push(questionToPush);
+      });
+    }
+  }
+
+  private async loadSurveyQuestions(): Promise<void> {
+    this.surveyQuestions = [];
+    const res = await this.surveyService.getAllSurveyQuestions();
+    if (res) {
+      // push to local defined type object
+      res.forEach(data => {
+        let ratingQuestions: Array<RatingSurveyQuestion> = null;
+        if (data.rating_questions) {
+          ratingQuestions = [];
+          data.rating_questions.forEach(ratingQ => {
+            ratingQuestions.push(
+              {
+                rating_question_id: ratingQ.rating_question_id,
+                rating_question_content: ratingQ.rating_question_content,
+                rating: null
+              })
+          });
+        }
+        const questionToPush: SurveyQuestion =
+        {
+          survey_question_id: data.survey_question_id,
+          question_content: data.question_content,
+          question_type_id: data.question_type_id,
+          type_name: data.type_name,
+          rating_questions: ratingQuestions,
+          answer_content: null
+        }
+        this.surveyQuestions.push(questionToPush);
+      })
+    }
   }
 
   public async next(): Promise<void> {
-    let canNext = true;
-    // retrieve potential email in user agreement page and disable back button
-    if (this.currentPageIndex == 1) {
-      this.backBtn.disabled = true;
-      // add user id
-      this.userId = await this.uploadService.addUserRecord(this.userEmailAddress);
-      if (this.userId == -1) {
-        // bad response
-        canNext = false;
-      }
-      console.log(this.userId);
-    }
-    else {
-      if (this.backBtn.disabled)
-        this.backBtn.disabled = false;
-    }
-
-    if (canNext)
-      this.currentPageIndex += 1;
-
-    // reach the end
+    // click submit on last page
     if (this.currentPageIndex == this.totalPageCount - 1) {
-      // this.nextBtn.disabled = true;
-      document.getElementById('nextBtn').innerHTML = "Submit";
-      this.submit();
+      await this.submit();
+    } else {
+      let canNext = true;
+      // retrieve potential email in user agreement page and disable back button
+      if (this.currentPageIndex == 1) {
+        this.backBtn.disabled = true;
+        // add user id
+        this.userId = await this.surveyService.addUserRecord(this.userEmailAddress);
+        if (this.userId == -1) {
+          // bad response
+          canNext = false;
+        }
+        console.log(this.userId);
+      }
+      else {
+        if (this.backBtn.disabled)
+          this.backBtn.disabled = false;
+      }
+
+      if (canNext)
+        this.currentPageIndex += 1;
+
+      // reach the last page
+      if (this.currentPageIndex == this.totalPageCount - 1) {
+        // this.nextBtn.disabled = true;
+        document.getElementById('nextBtn').innerHTML = "Submit";
+
+      }
     }
   }
 
@@ -102,7 +150,48 @@ export class HomePage implements OnInit, AfterViewInit {
     this.userEmailAddress = e.email;
   }
 
-  public submit(): void {
+  public async submit(): Promise<void> {
     console.log(this.videoQuestions);
+    console.log(this.surveyQuestions);
+
+    await this.submitSurveyAnswer();
+
+  }
+
+  /**
+   * upload survey answer
+   */
+  public async submitSurveyAnswer(): Promise<void> {
+
+    const surveyAnswerData: Array<SurveyAnswer> = [];
+
+    this.surveyQuestions.forEach(surveyQuestion => {
+      let answerContent: string | Array<SurveyRatingAnswer> = null;
+      // rating question case
+      if (surveyQuestion.type_name == 'Rating' && surveyQuestion.rating_questions != null) {
+        answerContent = [];
+
+        surveyQuestion.rating_questions.forEach(ratingQuestion => {
+          const ratingAnswer: SurveyRatingAnswer = {
+            rating_question_id: ratingQuestion.rating_question_id,
+            rating: ratingQuestion.rating
+          };
+          (answerContent as Array<SurveyRatingAnswer>).push(ratingAnswer);
+        });
+      }
+      else {
+        answerContent = surveyQuestion.answer_content;
+      }
+      const surveyAnswerToPush: SurveyAnswer = {
+        survey_question_id: surveyQuestion.survey_question_id,
+        question_type_id: surveyQuestion.question_type_id,
+        answer_content: answerContent
+      }
+
+      surveyAnswerData.push(surveyAnswerToPush);
+    });
+
+    console.log(this.userId);
+    await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
   }
 }

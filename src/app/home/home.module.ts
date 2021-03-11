@@ -9,6 +9,7 @@ import { VideoQuestionComponent } from '../components/video-question-component/v
 import { IntroductionComponent } from '../components/introduction-component/introduction.component';
 import { UserAgreementComponent } from '../components/user-agreement-component/user-agreement.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import { SurveyQuestionComponent } from '../components/survey-question-component/survey-question.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     HomePageRoutingModule,
     NgCircleProgressModule.forRoot({})
   ],
-  declarations: [HomePage, VideoQuestionComponent, IntroductionComponent, UserAgreementComponent]
+  declarations: [HomePage, VideoQuestionComponent, IntroductionComponent, UserAgreementComponent, SurveyQuestionComponent]
 })
 export class HomePageModule {}
