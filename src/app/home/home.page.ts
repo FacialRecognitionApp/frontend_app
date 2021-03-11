@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IonButton } from '@ionic/angular';
+import { VideoQuestionComponent } from '../components/video-question-component/video-question.component';
 import { VideoQuestion } from '../constants';
 import { UploadService } from '../upload.service';
 
@@ -16,60 +17,41 @@ export class HomePage implements OnInit, AfterViewInit {
   public pageArray;
   private userEmailAddress;
   public userId = -1;
+  public videoQuestions: Array<VideoQuestion> = [];
 
-  public videoQuestions: Array<VideoQuestion> = [
-    {
-      description: 'Closed-mouth smile',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    },
-    {
-      description: 'Open-mouth smile',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    },
-    {
-      description: 'Frown',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    },
-    {
-      description: 'Brow furrow',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    },
-    {
-      description: 'Wink with left eye',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    },
-    {
-      description: 'Wink with right eye',
-      type: 'video',
-      videoUrl: null,
-      durationMS: 1000
-    }
-  ];
-  
   constructor(private uploadService: UploadService) {
+  }
+
+  async ngOnInit(): Promise<void> {
+
+    await this.loadVideoQuestions();
+
     this.totalPageCount = this.videoQuestions.length + 2;
     this.pageArray = [];
     for (let i = 0; i < this.totalPageCount; i++) {
       this.pageArray.push(i);
     }
-   }
-
-  async ngOnInit(): Promise<void> {
   }
 
   ngAfterViewInit() {
     if (this.currentPageIndex == 0)
       this.backBtn.disabled = true;
+  }
+
+  private async loadVideoQuestions(): Promise<void> {
+    this.videoQuestions = [];
+    const res = await this.uploadService.getAllVideoQuestions();
+    res.forEach(data => {
+      const questionToPush: VideoQuestion =
+      {
+        videoTypeId: data.video_type_id, // from backend
+        description: data.video_type_content, // from backend
+        videoUrl: null,
+        durationMS: 1000
+      };
+
+      this.videoQuestions.push(questionToPush);
+    });
   }
 
   public async next(): Promise<void> {
@@ -86,7 +68,7 @@ export class HomePage implements OnInit, AfterViewInit {
       console.log(this.userId);
     }
     else {
-      if (this.backBtn.disabled) 
+      if (this.backBtn.disabled)
         this.backBtn.disabled = false;
     }
 
@@ -108,11 +90,11 @@ export class HomePage implements OnInit, AfterViewInit {
 
     if (this.nextBtn.disabled)
       this.nextBtn.disabled = false;
-    
+
     this.currentPageIndex -= 1;
     if (this.currentPageIndex == 0 || this.currentPageIndex == 2)
       this.backBtn.disabled = true;
-    
+
   }
 
   public getUserAgreementVals(e: any): void {

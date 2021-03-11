@@ -107,7 +107,7 @@ export class VideoQuestionComponent implements AfterViewInit {
   // upload to server test
   async uploadVideo(): Promise<void> {
     console.log(this.videoData);
-    await this.uploadService.uploadVideo(this.videoData, this.userId);
+    await this.uploadService.uploadVideo(this.videoData, this.userId, this.question.videoTypeId);
   }
 
   startCountdown() {
