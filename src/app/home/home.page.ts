@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { IonButton, LoadingController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { IonButton, IonProgressBar, LoadingController } from '@ionic/angular';
 import { SurveyQuestionComponent } from '../components/survey-question-component/survey-question.component';
 import { RatingSurveyQuestion, SurveyAnswer, SurveyQuestion, SurveyRatingAnswer, VideoQuestion } from '../constants';
 import { SurveyService } from '../survey.service';
@@ -12,15 +13,16 @@ import { SurveyService } from '../survey.service';
 export class HomePage implements OnInit, AfterViewInit {
   @ViewChild('backBtn') backBtn: IonButton;
   @ViewChild('nextBtn') nextBtn: IonButton;
+
   public currentPageIndex = 0;
-  public totalPageCount;
+  public totalPageCount = 0;
   public pageArray;
   private userEmailAddress;
   public userId = -1;
   public videoQuestions: Array<VideoQuestion> = [];
   public surveyQuestions: Array<SurveyQuestion> = [];
 
-  constructor(private surveyService: SurveyService, private loadingController: LoadingController) {
+  constructor(private surveyService: SurveyService, private loadingController: LoadingController, private router: Router) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -101,6 +103,7 @@ export class HomePage implements OnInit, AfterViewInit {
     // click submit on last page
     if (this.currentPageIndex == this.totalPageCount - 1) {
       await this.submit();
+      return;
     } else {
       let canNext = true;
       // retrieve potential email in user agreement page and disable back button
@@ -126,7 +129,6 @@ export class HomePage implements OnInit, AfterViewInit {
       if (this.currentPageIndex == this.totalPageCount - 1) {
         // this.nextBtn.disabled = true;
         document.getElementById('nextBtn').innerHTML = "Submit";
-
       }
     }
   }
@@ -155,7 +157,7 @@ export class HomePage implements OnInit, AfterViewInit {
     console.log(this.surveyQuestions);
 
     await this.submitSurveyAnswer();
-
+    this.router.navigateByUrl('/submit-success');
   }
 
   /**
@@ -191,7 +193,7 @@ export class HomePage implements OnInit, AfterViewInit {
       surveyAnswerData.push(surveyAnswerToPush);
     });
 
-    console.log(this.userId);
+    console.log(surveyAnswerData);
     await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
   }
 }

@@ -1,0 +1,15 @@
+.page-container {
+  max-width: 100px;
+  min-width: 500px;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+}
+
+.footer-container {
+  width: 60%;
+  height: 35px;
+  min-width: 300px;
+  margin: 5px auto;
+}

@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Webcam Survey
+    </ion-title>
+    <ion-progress-bar [value]="1"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]='true'>
+  <div class="page-container">
+    <div style="display: flex;">
+      <ion-icon name="checkmark-circle-outline" size="large"></ion-icon>
+      <ion-label style="margin: auto 15px; font-size: 22px;">Submitted successfully!</ion-label>
+    </div>
+    <h6 style="margin-top: 30px;">Thank you for submitting the facial gesture & survey.</h6>
+
+    <div style="display: flex; margin-top: 50px;">
+      <ion-button fill="clear" routerLink="/"><ion-icon name="refresh-circle-outline" slot="icon-only" size="large"></ion-icon></ion-button>
+      <ion-label style="margin: auto 0; font-size: 15px; font-weight: bold;">Start another one</ion-label>
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-footer>
+  <div class="footer-container">
+  </div>
+</ion-footer>

@@ -7,6 +7,10 @@ const routes: Routes = [
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
+    path: 'submit-success',
+    loadChildren: () => import('./submit-success/submit-success.module').then( m => m.SubmitSuccessPageModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

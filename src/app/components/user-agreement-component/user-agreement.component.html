@@ -19,10 +19,21 @@
       <ion-label style="font-weight: bold;">I agree</ion-label>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Your email address:</ion-label>
-      <ion-input #emailInput (ionChange)="changeEmail($event)"></ion-input>
+    <ion-item lines="none" mode="ios" style="margin-top: 30px;">
+      <ion-checkbox slot="start" (ionChange)="changeRequest($event)"></ion-checkbox>
+      <ion-label style="font-weight: bold;">Request a copy of your record from us?</ion-label>
     </ion-item>
+
+    <div #emailBlock hidden [formGroup]="emailForm">
+      <ion-item>
+        <ion-label>Your email address:</ion-label>
+        <ion-input formControlName="email" (ionChange)="changeEmail()"></ion-input>
+      </ion-item>
+      <div style="margin-left: 15px;">
+        <ion-text color='danger' *ngIf="emailForm.controls.email.errors?.required">Email is required if you need a copy of record in the future</ion-text>
+        <ion-text color='danger' *ngIf="emailForm.controls.email.errors?.email">Enter a valid email</ion-text>
+      </div>
+    </div>
 
   </div>
 </div>

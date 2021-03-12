@@ -117,9 +117,6 @@ export class SurveyService {
         user_id: userId,
         survey_answer: surveyAnswerData
       },
-      headers: {
-        'Content-Type': 'multipart/form-data;charset=UTF-8'
-      }
     });
 
     await loading.dismiss();
