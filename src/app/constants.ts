@@ -34,13 +34,17 @@ export interface SurveyRatingAnswer {
   rating: number;
 }
 
-// backend Calls
-export const upload_video_url = "http://localhost:7000/video/upload_file";
-export const add_user_url = "http://localhost:7000/user/create_new_user";
-export const get_all_video_questions_url = "http://localhost:7000/video/get_video_question_type";
-export const get_all_survey_questions_url = "http://localhost:7000/survey/survey_questions";
-export const upload_survey_answers_url = "http://localhost:7000/survey/survey_answer";
+// Test
+// const BASE_URL = "http://localhost:7000";
+// AWS Server
+const BASE_URL = "http://ec2-35-182-245-66.ca-central-1.compute.amazonaws.com";
 
+// backend Calls
+export const upload_video_url = `${BASE_URL}/video/upload_file`;
+export const add_user_url = `${BASE_URL}/user/create_new_user`;
+export const get_all_video_questions_url = `${BASE_URL}/video/get_video_question_type`;
+export const get_all_survey_questions_url = `${BASE_URL}/survey/survey_questions`;
+export const upload_survey_answers_url = `${BASE_URL}/survey/survey_answer`;
 
 /** 
 export const testVideoQuestions: Array<VideoQuestion> = [
