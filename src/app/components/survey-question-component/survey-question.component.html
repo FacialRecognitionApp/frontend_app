@@ -1,9 +1,10 @@
-<div style="margin-top: 30px;">
-    <ion-item>
-        <ion-text style="margin: 0 auto; font-size: 30px;">{{question.question_content}}</ion-text>
-    </ion-item>
+<div id="container">
+    <div style="margin-top: 30px;">
+        <ion-item lines="none">
+            <ion-text style="font-size: 18px; font-weight: bold;">{{question.question_content}}
+            </ion-text>
+        </ion-item>
 
-    <div id="container">
         <div *ngIf="question.type_name == 'Rating'">
             <div *ngFor="let ratingQ of question.rating_questions">
                 <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
@@ -16,14 +17,14 @@
             </div>
         </div>
 
-        <div *ngIf="question.type_name == 'Short Answer'" style="margin-top: 120px;">
+        <div *ngIf="question.type_name == 'Short Answer'">
             <ion-item>
                 <ion-label position="floating">Your answer here</ion-label>
                 <ion-input [(ngModel)]="question.answer_content"></ion-input>
             </ion-item>
         </div>
 
-        <div *ngIf="question.type_name == 'Long answer'" style="margin-top: 120px;">
+        <div *ngIf="question.type_name == 'Long answer'">
             <ion-item>
                 <ion-label position="stacked">Your answer here</ion-label>
                 <ion-textarea [(ngModel)]="question.answer_content"></ion-textarea>
