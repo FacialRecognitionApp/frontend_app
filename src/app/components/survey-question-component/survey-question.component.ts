@@ -10,7 +10,7 @@ import { SurveyService } from 'src/app/survey.service';
   styleUrls: ['./survey-question.component.scss'],
 })
 export class SurveyQuestionComponent implements AfterViewInit {
-  @Input() question: SurveyQuestion;
+  @Input() questions: Array<SurveyQuestion>;
 
   constructor(private surveyService: SurveyService) { }
 

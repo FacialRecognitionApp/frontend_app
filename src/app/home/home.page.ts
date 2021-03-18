@@ -14,7 +14,7 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild('backBtn') backBtn: IonButton;
   @ViewChild('nextBtn') nextBtn: IonButton;
 
-  public currentPageIndex = 0;
+  public currentPageIndex = 8;
   public totalPageCount = 0;
   public pageArray;
   private userEmailAddress;
@@ -37,7 +37,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
     await loading.dismiss();
 
-    this.totalPageCount = 2 + this.videoQuestions.length + this.surveyQuestions.length; // 2 => intro + user agreement page
+    this.totalPageCount = 2 + this.videoQuestions.length + 1; // 2 => intro + user agreement page, 1 => survey section
     this.pageArray = [];
     for (let i = 0; i < this.totalPageCount; i++) {
       this.pageArray.push(i);

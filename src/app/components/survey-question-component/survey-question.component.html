@@ -1,34 +1,35 @@
 <div id="container">
-    <div style="margin-top: 30px;">
-        <ion-item lines="none">
-            <ion-text style="font-size: 18px; font-weight: bold;">{{question.question_content}}
-            </ion-text>
-        </ion-item>
+    <ion-label style="font-size: 20px; font-weight: bold;">Part B - Survey</ion-label>
+    <div *ngFor="let question of questions">
+        <div style="margin-top: 30px;">
+            <ion-item lines="none">
+                <ion-text style="font-size: 18px; font-weight: bold;">{{question.question_content}}
+                </ion-text>
+            </ion-item>
 
-        <div *ngIf="question.type_name == 'Rating'">
-            <div *ngFor="let ratingQ of question.rating_questions">
-                <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
+            <div *ngIf="question.type_name == 'Rating'">
+                <div *ngFor="let ratingQ of question.rating_questions">
+                    <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
+                    <ion-item>
+                        <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating">
+                            <ion-label slot="start">Easiest</ion-label>
+                            <ion-label slot="end">Hardest</ion-label>
+                        </ion-range>
+                    </ion-item>
+                </div>
+            </div>
+
+            <div *ngIf="question.type_name == 'Short Answer'">
                 <ion-item>
-                    <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating">
-                        <ion-label slot="start">Easiest</ion-label>
-                        <ion-label slot="end">Hardest</ion-label>
-                    </ion-range>
+                    <ion-input [(ngModel)]="question.answer_content" placeholder="short answer"></ion-input>
                 </ion-item>
             </div>
-        </div>
 
-        <div *ngIf="question.type_name == 'Short Answer'">
-            <ion-item>
-                <ion-label position="floating">Your answer here</ion-label>
-                <ion-input [(ngModel)]="question.answer_content"></ion-input>
-            </ion-item>
-        </div>
-
-        <div *ngIf="question.type_name == 'Long answer'">
-            <ion-item>
-                <ion-label position="stacked">Your answer here</ion-label>
-                <ion-textarea [(ngModel)]="question.answer_content"></ion-textarea>
-            </ion-item>
+            <div *ngIf="question.type_name == 'Long answer'">
+                <ion-item>
+                    <ion-textarea [(ngModel)]="question.answer_content" placeholder="long answer"></ion-textarea>
+                </ion-item>
+            </div>
         </div>
     </div>
 </div>

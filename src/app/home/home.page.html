@@ -22,7 +22,7 @@
       </div>
       <!-- Part B Survey -->
       <div *ngIf="i > 1 + videoQuestions.length">
-        <survey-question *ngIf="currentPageIndex == i" [question]="surveyQuestions[currentPageIndex - 2 - videoQuestions.length]"></survey-question>
+        <survey-question *ngIf="currentPageIndex == i" [questions]="surveyQuestions"></survey-question>
       </div>
     </div>
   </div>
