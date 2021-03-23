@@ -35,10 +35,11 @@ export interface SurveyRatingAnswer {
   rating: number;
 }
 
-// Test
-const BASE_URL = "http://localhost:7000";
+// Local
+// const BASE_URL = "http://localhost:7000";
 // AWS Server
-// const BASE_URL = "http://ec2-35-182-245-66.ca-central-1.compute.amazonaws.com";
+const BASE_URL =
+  "http://ec2-35-182-245-66.ca-central-1.compute.amazonaws.com/api";
 
 // backend Calls
 export const upload_video_url = `${BASE_URL}/video/upload_file`;
