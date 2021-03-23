@@ -1,25 +1,44 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IonButton } from '@ionic/angular';
+import { url } from 'inspector';
 import { CircleProgressComponent } from 'ng-circle-progress';
 import { VideoQuestion } from 'src/app/constants';
 import { SurveyService } from 'src/app/survey.service';
+import * as stream from 'stream';
 
 @Component({
   selector: 'video-question',
   templateUrl: './video-question.component.html',
   styleUrls: ['./video-question.component.scss'],
 })
-export class VideoQuestionComponent implements AfterViewInit {
+export class VideoQuestionComponent implements OnInit, AfterViewInit {
   @Input() question: VideoQuestion;
   @Input() userId: number;
+  @Output() toggleDisableEmitter: EventEmitter<any> = new EventEmitter();
+
   @ViewChild('faceRecVideo')
   private faceRecVideo: ElementRef;
   @ViewChild('countdown')
   private countdown: CircleProgressComponent;
-  private videoData: FormData;
+  private canNextBtn = false;
 
   constructor(private sanitizer: DomSanitizer, private surveyService: SurveyService) { }
+
+  ngOnInit() {
+    this.toggleDisableState();
+  }
+
+  toggleDisableState() {
+    if (this.question.video_form_data?.get('file')) {
+      this.canNextBtn = true;
+    } else {
+      this.canNextBtn = false;
+    }
+    this.toggleDisableEmitter.emit({
+      canNext: this.canNextBtn
+    });
+  }
 
   ngAfterViewInit() {
     if (this.question.video_url) {
@@ -65,7 +84,6 @@ export class VideoQuestionComponent implements AfterViewInit {
       audio: false
     })
       .then(stream => {
-        console.log(stream);
         video.srcObject = stream;
 
         this.startCountdown();
@@ -79,21 +97,21 @@ export class VideoQuestionComponent implements AfterViewInit {
         let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
         const url = window.URL.createObjectURL(recordedBlob); // blob url to retrieve video
         const file = new File([recordedBlob], 'video.webm');
-        this.videoData = new FormData();
-        this.videoData.append('file', file);
+        this.question.video_form_data = new FormData();
+        this.question.video_form_data.append('file', file);
 
-        console.log(this.videoData.get('file'));
-
+        // console.log(this.question.video_form_data.get('file'));
+        
         // stop the recording
         if (video.srcObject != null) {
           video.srcObject = null;
         }
 
         this.transferToPreview(url);
+        this.toggleDisableState();
 
         // Storage
         this.question.video_url = url;
-        this.question.video_form_data = this.videoData;
       });
   }
 

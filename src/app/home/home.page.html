@@ -18,7 +18,8 @@
       </div>
       <!-- Part A Video -->
       <div *ngIf="i > 1 && i <= 1 + videoQuestions.length">
-        <video-question *ngIf="currentPageIndex == i" [question]="videoQuestions[currentPageIndex - 2]" [userId]="userId"></video-question>
+        <video-question *ngIf="currentPageIndex == i" [question]="videoQuestions[currentPageIndex - 2]" [userId]="userId" 
+          (toggleDisableEmitter)="getVideoVals($event)"></video-question>
       </div>
       <!-- Part B Survey -->
       <div *ngIf="i > 1 + videoQuestions.length">

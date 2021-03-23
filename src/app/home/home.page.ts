@@ -66,7 +66,7 @@ export class HomePage implements OnInit, AfterViewInit {
         {
           video_type_id: data.video_type_id,
           video_type_content: data.video_type_content,
-          duration_ms: this.sToMs(data.video_duration)
+          duration_ms: 1000, //this.sToMs(data.video_duration)
         };
 
         this.videoQuestions.push(questionToPush);
@@ -113,7 +113,7 @@ export class HomePage implements OnInit, AfterViewInit {
       return;
     } else {
       let canNext = true;
-      // retrieve potential email in user agreement page and disable back button
+      // user agreement page
       if (this.currentPageIndex == 1) {
         this.backBtn.disabled = true;
         // add user id
@@ -129,8 +129,9 @@ export class HomePage implements OnInit, AfterViewInit {
           this.backBtn.disabled = false;
       }
 
-      if (canNext)
+      if (canNext) {
         this.currentPageIndex += 1;
+      }
 
       // reach the last page
       if (this.currentPageIndex == this.totalPageCount - 1) {
@@ -154,9 +155,15 @@ export class HomePage implements OnInit, AfterViewInit {
 
   }
 
+  // user agreement page disable/enable toggle
   public getUserAgreementVals(e: any): void {
     this.nextBtn.disabled = !e.canNext;
     this.userEmailAddress = e.email;
+  }
+
+  // video pages disable/enable toggle
+  public getVideoVals(e: any): void {
+    this.nextBtn.disabled = !e.canNext;
   }
 
   public async submit(): Promise<void> {
@@ -177,6 +184,7 @@ export class HomePage implements OnInit, AfterViewInit {
    * upload video form data
    */
   public async submitVideosFormData(): Promise<void> {
+    console.log(this.videoQuestions);
     for (const videoQuestion of this.videoQuestions) {
       await this.surveyService.uploadVideo(videoQuestion.video_form_data, this.userId, videoQuestion.video_type_id);
     }
@@ -217,5 +225,5 @@ export class HomePage implements OnInit, AfterViewInit {
     console.log(surveyAnswerData);
     await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
   }
-  
+
 }
