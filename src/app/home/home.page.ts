@@ -49,17 +49,24 @@ export class HomePage implements OnInit, AfterViewInit {
       this.backBtn.disabled = true;
   }
 
+  // Convert Second to MS
+  private sToMs(durationSecs): number {
+    return durationSecs * 1000;
+  }
+
   private async loadVideoQuestions(): Promise<void> {
     this.videoQuestions = [];
     const res = await this.surveyService.getAllVideoQuestions();
+
+    console.log(res);
     if (res) {
       // push to local defined type object
       res.forEach(data => {
         const questionToPush: VideoQuestion =
         {
-          video_type_id: data.video_type_id, // from backend
-          video_type_content: data.video_type_content, // from backend
-          duration_ms: 1000
+          video_type_id: data.video_type_id,
+          video_type_content: data.video_type_content,
+          duration_ms: this.sToMs(data.video_duration)
         };
 
         this.videoQuestions.push(questionToPush);
@@ -81,7 +88,7 @@ export class HomePage implements OnInit, AfterViewInit {
               {
                 rating_question_id: ratingQ.rating_question_id,
                 rating_question_content: ratingQ.rating_question_content,
-                rating: null
+                rating: -1 //////// default value //////////////////
               })
           });
         }
@@ -92,7 +99,7 @@ export class HomePage implements OnInit, AfterViewInit {
           question_type_id: data.question_type_id,
           type_name: data.type_name,
           rating_questions: ratingQuestions,
-          answer_content: null
+          answer_content: '' //////// default value //////////////////
         }
         this.surveyQuestions.push(questionToPush);
       })
@@ -156,15 +163,29 @@ export class HomePage implements OnInit, AfterViewInit {
     console.log(this.videoQuestions);
     console.log(this.surveyQuestions);
 
-    await this.submitSurveyAnswer();
+    await this.submitData();
     this.router.navigateByUrl('/submit-success');
+  }
+
+
+  public async submitData(): Promise<void> {
+    await this.submitSurveyAnswer();
+    await this.submitVideosFormData();
+  }
+
+  /**
+   * upload video form data
+   */
+  public async submitVideosFormData(): Promise<void> {
+    for (const videoQuestion of this.videoQuestions) {
+      await this.surveyService.uploadVideo(videoQuestion.video_form_data, this.userId, videoQuestion.video_type_id);
+    }
   }
 
   /**
    * upload survey answer
    */
   public async submitSurveyAnswer(): Promise<void> {
-
     const surveyAnswerData: Array<SurveyAnswer> = [];
 
     this.surveyQuestions.forEach(surveyQuestion => {
@@ -196,4 +217,5 @@ export class HomePage implements OnInit, AfterViewInit {
     console.log(surveyAnswerData);
     await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
   }
+  
 }

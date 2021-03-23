@@ -91,7 +91,9 @@ export class VideoQuestionComponent implements AfterViewInit {
 
         this.transferToPreview(url);
 
+        // Storage
         this.question.video_url = url;
+        this.question.video_form_data = this.videoData;
       });
   }
 
@@ -102,12 +104,6 @@ export class VideoQuestionComponent implements AfterViewInit {
     document.getElementById('preview').innerHTML = 'Preview';
     document.getElementById('startBtn').setAttribute('disabled', 'false');
     document.getElementById('startBtn').innerHTML = 'Restart';
-  }
-
-  // upload to server test
-  async uploadVideo(): Promise<void> {
-    console.log(this.videoData);
-    await this.surveyService.uploadVideo(this.videoData, this.userId, this.question.video_type_id);
   }
 
   startCountdown() {

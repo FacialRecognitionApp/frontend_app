@@ -11,7 +11,7 @@
                 <div *ngFor="let ratingQ of question.rating_questions">
                     <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
                     <ion-item>
-                        <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating">
+                        <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating" required>
                             <ion-label slot="start">Easiest</ion-label>
                             <ion-label slot="end">Hardest</ion-label>
                         </ion-range>
@@ -21,13 +21,13 @@
 
             <div *ngIf="question.type_name == 'Short Answer'">
                 <ion-item>
-                    <ion-input [(ngModel)]="question.answer_content" placeholder="short answer"></ion-input>
+                    <ion-input [(ngModel)]="question.answer_content" placeholder="short answer" required></ion-input>
                 </ion-item>
             </div>
 
             <div *ngIf="question.type_name == 'Long answer'">
                 <ion-item>
-                    <ion-textarea [(ngModel)]="question.answer_content" placeholder="long answer"></ion-textarea>
+                    <ion-textarea [(ngModel)]="question.answer_content" placeholder="long answer" required></ion-textarea>
                 </ion-item>
             </div>
         </div>

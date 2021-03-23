@@ -4,6 +4,7 @@ export interface VideoQuestion {
   video_type_content: string;
   video_url?: string;
   duration_ms: number;
+  video_form_data?: FormData;
 }
 
 export interface SurveyQuestion {

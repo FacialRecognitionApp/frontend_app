@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { RatingSurveyQuestion, SurveyAnswer, SurveyQuestion, SurveyRatingAnswer, VideoQuestion } from '../constants';
 import { SurveyService } from '../survey.service';
 
@@ -8,7 +9,7 @@ import { SurveyService } from '../survey.service';
   styleUrls: ['submit-success.page.scss'],
 })
 export class SubmitSuccessPage implements OnInit, AfterViewInit {
-  constructor() {
+  constructor(private router: Router) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -17,5 +18,4 @@ export class SubmitSuccessPage implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
   }
-
 }
