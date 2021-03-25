@@ -14,7 +14,7 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild('backBtn') backBtn: IonButton;
   @ViewChild('nextBtn') nextBtn: IonButton;
 
-  public currentPageIndex = 3;
+  public currentPageIndex = 0;
   public totalPageCount = 0;
   public pageArray;
   private userEmailAddress;
