@@ -23,7 +23,8 @@
       </div>
       <!-- Part B Survey -->
       <div *ngIf="i > 1 + videoQuestions.length">
-        <survey-question *ngIf="currentPageIndex == i" [questions]="surveyQuestions"></survey-question>
+        <survey-question *ngIf="currentPageIndex == i" [questions]="surveyQuestions"
+          (toggleDisableEmitter)="getSurveyVals($event)"></survey-question>
       </div>
     </div>
   </div>

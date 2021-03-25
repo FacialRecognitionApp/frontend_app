@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import axios from 'axios';
 import { upload_video_url, add_user_url, get_all_video_questions_url, get_all_survey_questions_url, SurveyQuestion, SurveyAnswer, upload_survey_answers_url } from './constants';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 
 @Injectable({
@@ -12,7 +12,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class SurveyService {
 
-  constructor(private http: HttpClient, private loadingController: LoadingController) { }
+  constructor(private http: HttpClient, private loadingController: LoadingController, private alertController: AlertController) { }
 
   // ===================== User Id ========================
   async addUserRecord(email?: string): Promise<number> {
@@ -36,7 +36,7 @@ export class SurveyService {
       return res.data.user_id;
     }
     else {
-      alert(res.data.message);
+      await this.getAlert(res.data.message);
       return -1;
     }
   }
@@ -53,19 +53,12 @@ export class SurveyService {
       return res.data.data;
     }
     else {
-      alert(res.data.message);
+      await this.getAlert(res.data.message);
       return null;
     }
   }
 
-  async uploadVideo(videoData: FormData, userId: number, videoTypeId: number): Promise<void> {
-    // loading indicator
-    const loading = await this.loadingController.create({
-      mode: 'ios',
-      message: 'Please wait...',
-    });
-    await loading.present();
-
+  async uploadVideo(videoData: FormData, userId: number, videoTypeId: number): Promise<boolean | string> {
     const res = await axios({
       method: 'POST',
       url: upload_video_url,
@@ -79,10 +72,12 @@ export class SurveyService {
       }
     });
 
-    await loading.dismiss();
     console.log(res.data);
 
-    alert(res.data.message);
+    if (!res.data.success) {
+      return res.data.message;
+    }
+    return true;
   }
 
   // ======================= Survey ==============================
@@ -97,19 +92,12 @@ export class SurveyService {
       return res.data.data;
     }
     else {
-      alert(res.data.message);
+      await this.getAlert(res.data.message);
       return null;
     }
   }
 
-  async uploadSurveyQuestionAnswers(surveyAnswerData: Array<SurveyAnswer>, userId: number): Promise<void> {
-    // loading indicator
-    const loading = await this.loadingController.create({
-      mode: 'ios',
-      message: 'Please wait...',
-    });
-    await loading.present();
-
+  async uploadSurveyQuestionAnswers(surveyAnswerData: Array<SurveyAnswer>, userId: number): Promise<boolean | string> {
     const res = await axios({
       method: 'POST',
       url: upload_survey_answers_url,
@@ -119,25 +107,20 @@ export class SurveyService {
       },
     });
 
-    await loading.dismiss();
     console.log(res.data);
-
-    alert(res.data.message);
+    if (!res.data.success) {
+      return res.data.message;
+    }
+    return true;
   }
 
-  /** 
-  private handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred
-      console.error('An error occurred:', error.error.message);
-    } else {
-      // Backend error
-      console.error(
-        `Backend returned: ${error.status}, ` +
-        `body: ${error.error}`);
-    }
-    // Return a user-facing error message
-    return throwError(
-      'Something bad happened; please try again later.');
-  }*/
+  
+  private async getAlert(msg: string): Promise<void> {
+    let alert = await this.alertController.create({
+      header: 'Error',
+      subHeader: msg,
+      buttons: ['Dismiss']
+    });
+    await alert.present();
+  }
 }

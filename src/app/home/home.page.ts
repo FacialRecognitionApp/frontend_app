@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonProgressBar, LoadingController } from '@ionic/angular';
+import { AlertController, IonButton, IonProgressBar, LoadingController } from '@ionic/angular';
 import { SurveyQuestionComponent } from '../components/survey-question-component/survey-question.component';
 import { RatingSurveyQuestion, SurveyAnswer, SurveyQuestion, SurveyRatingAnswer, VideoQuestion } from '../constants';
 import { SurveyService } from '../survey.service';
@@ -14,7 +14,7 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild('backBtn') backBtn: IonButton;
   @ViewChild('nextBtn') nextBtn: IonButton;
 
-  public currentPageIndex = 0;
+  public currentPageIndex = 3;
   public totalPageCount = 0;
   public pageArray;
   private userEmailAddress;
@@ -22,7 +22,7 @@ export class HomePage implements OnInit, AfterViewInit {
   public videoQuestions: Array<VideoQuestion> = [];
   public surveyQuestions: Array<SurveyQuestion> = [];
 
-  constructor(private surveyService: SurveyService, private loadingController: LoadingController, private router: Router) {
+  constructor(private surveyService: SurveyService, private loadingController: LoadingController, private router: Router, private alertController: AlertController) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -66,7 +66,8 @@ export class HomePage implements OnInit, AfterViewInit {
         {
           video_type_id: data.video_type_id,
           video_type_content: data.video_type_content,
-          duration_ms: 1000, //this.sToMs(data.video_duration)
+          image_url: data.image_url,
+          duration_ms: this.sToMs(data.video_duration)
         };
 
         this.videoQuestions.push(questionToPush);
@@ -88,7 +89,7 @@ export class HomePage implements OnInit, AfterViewInit {
               {
                 rating_question_id: ratingQ.rating_question_id,
                 rating_question_content: ratingQ.rating_question_content,
-                rating: -1 //////// default value //////////////////
+                rating: 1 //////// default value //////////////////
               })
           });
         }
@@ -166,34 +167,62 @@ export class HomePage implements OnInit, AfterViewInit {
     this.nextBtn.disabled = !e.canNext;
   }
 
+  // survey pages disable/enable toggle
+  public getSurveyVals(e: any): void {
+    this.nextBtn.disabled = !e.canNext;
+  }
+
   public async submit(): Promise<void> {
     console.log(this.videoQuestions);
     console.log(this.surveyQuestions);
 
     await this.submitData();
-    this.router.navigateByUrl('/submit-success');
   }
 
 
   public async submitData(): Promise<void> {
-    await this.submitSurveyAnswer();
-    await this.submitVideosFormData();
+    // loading indicator
+    const loading = await this.loadingController.create({
+      mode: 'ios',
+      message: 'Please wait...',
+    });
+    await loading.present();
+
+    const surveySuccess = await this.submitSurveyAnswer();
+    const videoSuccess = await this.submitVideosFormData();
+
+    await loading.dismiss();
+
+    if (surveySuccess === true && videoSuccess === true) {
+      this.router.navigateByUrl('/submit-success');
+    } 
+    // alert
+    else {
+      let alert = await this.alertController.create({
+        header: 'Error',
+        subHeader: surveySuccess === true ? videoSuccess.toString() : surveySuccess.toString(),
+        buttons: ['Dismiss']
+      });
+      await alert.present();
+    }
   }
 
   /**
    * upload video form data
    */
-  public async submitVideosFormData(): Promise<void> {
+  public async submitVideosFormData(): Promise<boolean | string> {
     console.log(this.videoQuestions);
+    let success = null;
     for (const videoQuestion of this.videoQuestions) {
-      await this.surveyService.uploadVideo(videoQuestion.video_form_data, this.userId, videoQuestion.video_type_id);
+      success = await this.surveyService.uploadVideo(videoQuestion.video_form_data, this.userId, videoQuestion.video_type_id);
     }
+    return success;
   }
 
   /**
    * upload survey answer
    */
-  public async submitSurveyAnswer(): Promise<void> {
+  public async submitSurveyAnswer(): Promise<boolean | string> {
     const surveyAnswerData: Array<SurveyAnswer> = [];
 
     this.surveyQuestions.forEach(surveyQuestion => {
@@ -223,7 +252,8 @@ export class HomePage implements OnInit, AfterViewInit {
     });
 
     console.log(surveyAnswerData);
-    await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
+    const success = await this.surveyService.uploadSurveyQuestionAnswers(surveyAnswerData, this.userId);
+    return success;
   }
 
 }

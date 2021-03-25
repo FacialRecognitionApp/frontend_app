@@ -1,35 +1,42 @@
 <div id="container">
     <ion-label style="font-size: 20px; font-weight: bold;">Part B - Survey</ion-label>
-    <div *ngFor="let question of questions">
-        <div style="margin-top: 30px;">
-            <ion-item lines="none">
-                <ion-text style="font-size: 18px; font-weight: bold;">{{question.question_content}}
-                </ion-text>
-            </ion-item>
 
-            <div *ngIf="question.type_name == 'Rating'">
-                <div *ngFor="let ratingQ of question.rating_questions">
-                    <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
+    <form #surveyForm="ngForm">
+        <div *ngFor="let question of questions">
+            <div style="margin-top: 30px;">
+                <ion-item lines="none">
+                    <ion-text style="font-size: 18px; font-weight: bold;">{{question.question_content}}
+                    </ion-text>
+                </ion-item>
+
+                <div *ngIf="question.type_name == 'Rating'">
+                    <div *ngFor="let ratingQ of question.rating_questions">
+                        <ion-item lines="none">{{ratingQ.rating_question_content}}</ion-item>
+                        <ion-item>
+                            <ion-range min="1" max="6" step="1" snaps pin 
+                                [name]="question.type_name + '-' + question.survey_question_id + '-' + ratingQ.rating_question_id" 
+                                [(ngModel)]="ratingQ.rating" required>
+                                <ion-label slot="start">Easiest</ion-label>
+                                <ion-label slot="end">Hardest</ion-label>
+                            </ion-range>
+                        </ion-item>
+                    </div>
+                </div>
+
+                <div *ngIf="question.type_name == 'Short Answer'">
                     <ion-item>
-                        <ion-range min="1" max="6" step="1" snaps pin [(ngModel)]="ratingQ.rating" required>
-                            <ion-label slot="start">Easiest</ion-label>
-                            <ion-label slot="end">Hardest</ion-label>
-                        </ion-range>
+                        <ion-input [name]="question.type_name + '-' + question.survey_question_id" [(ngModel)]="question.answer_content" placeholder="short answer" required>
+                        </ion-input>
+                    </ion-item>
+                </div>
+
+                <div *ngIf="question.type_name == 'Long answer'">
+                    <ion-item>
+                        <ion-textarea [name]="question.type_name + '-' + question.survey_question_id" [(ngModel)]="question.answer_content" placeholder="long answer" required>
+                        </ion-textarea>
                     </ion-item>
                 </div>
             </div>
-
-            <div *ngIf="question.type_name == 'Short Answer'">
-                <ion-item>
-                    <ion-input [(ngModel)]="question.answer_content" placeholder="short answer" required></ion-input>
-                </ion-item>
-            </div>
-
-            <div *ngIf="question.type_name == 'Long answer'">
-                <ion-item>
-                    <ion-textarea [(ngModel)]="question.answer_content" placeholder="long answer" required></ion-textarea>
-                </ion-item>
-            </div>
         </div>
-    </div>
+    </form>
 </div>

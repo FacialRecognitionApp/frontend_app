@@ -2,6 +2,7 @@
 export interface VideoQuestion {
   video_type_id: number;
   video_type_content: string;
+  image_url?: string;
   video_url?: string;
   duration_ms: number;
   video_form_data?: FormData;
