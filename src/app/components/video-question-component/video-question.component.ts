@@ -1,18 +1,13 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { IonButton } from '@ionic/angular';
-import { url } from 'inspector';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { CircleProgressComponent } from 'ng-circle-progress';
 import { VideoQuestion } from 'src/app/constants';
-import { SurveyService } from 'src/app/survey.service';
-import * as stream from 'stream';
 
 @Component({
   selector: 'video-question',
   templateUrl: './video-question.component.html',
   styleUrls: ['./video-question.component.scss'],
 })
-export class VideoQuestionComponent implements OnInit, AfterViewInit {
+export class VideoQuestionComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() question: VideoQuestion;
   @Input() userId: number;
   @Output() toggleDisableEmitter: EventEmitter<any> = new EventEmitter();
@@ -22,8 +17,9 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
   @ViewChild('countdown')
   private countdown: CircleProgressComponent;
   private canNextBtn = false;
+  private stream: MediaStream;
 
-  constructor(private sanitizer: DomSanitizer, private surveyService: SurveyService) { }
+  constructor() { }
 
   ngOnInit() {
     this.toggleDisableState();
@@ -40,10 +36,24 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     if (this.question.video_url) {
       this.transferToPreview(this.question.video_url);
     }
+    else {
+      // turn on preview
+      const video = this.faceRecVideo.nativeElement;
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
+      video.srcObject = this.stream;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.stream)
+      this.stream.getTracks().forEach(track => track.stop()); // stop camera
   }
 
   wait(delayInMS) {
@@ -83,8 +93,9 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
       video: true,
       audio: false
     })
-      .then(stream => {
-        video.srcObject = stream;
+    .then(stream => {
+        this.stream = stream;
+        video.srcObject = this.stream;
 
         this.startCountdown();
         return new Promise(resolve => video.onplaying = resolve);
@@ -94,6 +105,7 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
       )
       // stop recording
       .then(recordedChunks => {
+        this.stream.getTracks().forEach(track => track.stop()); // stop camera
         let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
         const url = window.URL.createObjectURL(recordedBlob); // blob url to retrieve video
         const file = new File([recordedBlob], 'video.webm');
@@ -101,7 +113,7 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
         this.question.video_form_data.append('file', file);
 
         // console.log(this.question.video_form_data.get('file'));
-        
+
         // stop the recording
         if (video.srcObject != null) {
           video.srcObject = null;
@@ -117,6 +129,10 @@ export class VideoQuestionComponent implements OnInit, AfterViewInit {
 
   transferToPreview(url: string) {
     const video = this.faceRecVideo.nativeElement;
+
+    if (video.srcObject != null) {
+      video.srcObject = null;
+    }
     video.src = url;
     video.controls = true;
     document.getElementById('preview').innerHTML = 'Preview';
